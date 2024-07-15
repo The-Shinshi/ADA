@@ -1,3 +1,5 @@
+#please remove this until mam asks u to do it
+
 from collections import deque
 import copy
 file = open(input('Enter the file name:'))
