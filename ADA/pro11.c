@@ -47,13 +47,13 @@ int generateRandomNumber() {
 }
 
 int main() {
-	int n = 10;
+	int n = 6000;
 	int* arr = (int*)malloc(n * sizeof(int));
 	srand(time(NULL));
 	printf("Random numbers for n = %d:\n", n);
 	for (int i = 0; i < n; i++) {
 		arr[i] = generateRandomNumber();
-		printf("%d\t ", arr[i]);
+		printf("%d", arr[i]);
 	}
 	printf("\n");
 	clock_t start = clock();
@@ -63,7 +63,7 @@ int main() {
 	printf("\nTime taken to sort for n = %d: %lf seconds\n\n", n, time_taken);
 	printf("Sorted numbers for n = %d:\n", n);
 	for(int i = 0; i < n; i++) {
-		printf("%d\t ", arr[i]);
+		printf("%d", arr[i]);
 	}
 	printf("\n\n");
 	free(arr);
