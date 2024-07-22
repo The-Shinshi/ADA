@@ -2,22 +2,22 @@ import time
 start_time = time.time()
 import re
 import itertools
-import collections
+import collections 
 import copy
 import queue
 
-
-p=open("input4.txt","r")
+p=open("input5.txt","r")
 data=list()
 data1= p.readlines()
 count=0
+
 n=int(data1[0])
 queries=list()
-
 for i in range(1,n+1):
-    queries.append(data1[i].rstrip())
+    queries.append(data1[i].rstrip())   
 k=int(data1[n+1])
 kbbefore=list()
+
 
 def CNF(sentence):
     temp=re.split("=>",sentence)
@@ -31,27 +31,24 @@ def CNF(sentence):
     temp2=temp2+'|'+temp[1]
     return temp2
 
+
 variableArray = list("abcdefghijklmnopqrstuvwxyz")
-variableArray2 = [ ]
-variableArray3 = [ ]
-variableArray5 = [ ]
-variableArray6 = [ ]
+variableArray2 = []
+variableArray3 = []
+variableArray5 = []
+variableArray6 = []
 for eachCombination in itertools.permutations(variableArray, 2):
     variableArray2.append(eachCombination[0] + eachCombination[1])
-
 for eachCombination in itertools.permutations(variableArray, 3):
     variableArray3.append(eachCombination[0] + eachCombination[1] + eachCombination[2])
-
 for eachCombination in itertools.permutations(variableArray, 4):
-    variableArray5.append(eachCombination[0] + eachCombination[1] + eachCombination[2]+
-    eachCombination[3])
-
+    variableArray5.append(eachCombination[0] + eachCombination[1] + eachCombination[2]+ eachCombination[3])
 for eachCombination in itertools.permutations(variableArray, 5):
     variableArray6.append(eachCombination[0] + eachCombination[1] + eachCombination[2] + eachCombination[3] + eachCombination[4])
-
 variableArray = variableArray + variableArray2 + variableArray3 + variableArray5 + variableArray6
 capitalVariables = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 number=0
+  
 
 def standardizationnew(sentence):
     newsentence=list(sentence)
@@ -71,7 +68,7 @@ def standardizationnew(sentence):
                     number+=1
                 else:
                     newsentence[i+1]=substitution
-    return "".join(newsentence)
+    return  "".join(newsentence)            
 
 def insidestandardizationnew(sentence):
     lengthofsentence=len(sentence)
@@ -83,20 +80,20 @@ def insidestandardizationnew(sentence):
     while i <=len(newsentence)-1 :
         if(newsentence[i]==',' or newsentence[i]=='('):
             if newsentence[i+1] not in capitalVariables:
-                j=i+1
-                while(newsentence[j]!=',' and newsentence[j]!=')' ):
-                    j+=1
-                substitution=variables.get(newsentence[i+1:j])
-                if not substitution :
+               j=i+1
+               while(newsentence[j]!=',' and newsentence[j]!=')' ):
+                     j+=1
+               substitution=variables.get(newsentence[i+1:j])
+               if not substitution :
                     variables[newsentence[i+1:j]]=variableArray[number]
                     newsentence=newsentence[:i+1]+variableArray[number]+newsentence[j:]
                     i=i+len(variableArray[number])
                     number+=1
-                else:
+               else:           
                     newsentence=newsentence[:i+1]+substitution+newsentence[j:]
                     i=i+len(substitution)
-            i+=1
-        return newsentence
+        i+=1
+    return newsentence
 
 def replace(sentence,theta):
     lengthofsentence=len(sentence)
@@ -104,17 +101,18 @@ def replace(sentence,theta):
     i=0
     while i <=len(newsentence)-1 :
         if(newsentence[i]==',' or newsentence[i]=='('):
-            if newsentence[i+1] not in capitalVariables:# This operator is used to check whether an element is not present in the passed list or not
-                j=i+1
-                while(newsentence[j]!=',' and newsentence[j]!=')' ):
-                    j+=1
-                nstemp=newsentence[i+1:j]
-                substitution=theta.get(nstemp)
-                if substitution :
+            if newsentence[i+1] not in capitalVariables:
+               j=i+1
+               while(newsentence[j]!=',' and newsentence[j]!=')' ):
+                     j+=1
+               nstemp=newsentence[i+1:j]      
+               substitution=theta.get(nstemp)
+               if substitution :
                     newsentence=newsentence[:i+1]+substitution+newsentence[j:]
                     i=i+len(substitution)
-            i+=1
-        return newsentence
+        i+=1   
+    return newsentence    
+
 repeatedsentencecheck=collections.OrderedDict()
 
 def insidekbcheck(sentence):
@@ -122,38 +120,39 @@ def insidekbcheck(sentence):
     newsentence=pattern.split(sentence)
     newsentence.sort()
     newsentence="|".join(newsentence)
-    global repeatedsentencecheck
+    global repeatedsentencecheck 
     i=0
     while i <=len(newsentence)-1 :
         if(newsentence[i]==',' or newsentence[i]=='('):
             if newsentence[i+1] not in capitalVariables:
-                j=i+1
-                while(newsentence[j]!=',' and newsentence[j]!=')' ):
-                    j+=1
-                newsentence=newsentence[:i+1]+'x'+newsentence[j:]
-            i+=1
-        repeatflag=repeatedsentencecheck.get(newsentence)
-        if repeatflag :
-            return True
-        repeatedsentencecheck[newsentence]=1
-        return False
-    
+               j=i+1
+               while(newsentence[j]!=',' and newsentence[j]!=')' ):
+                     j+=1
+               newsentence=newsentence[:i+1]+'x'+newsentence[j:]
+        i+=1
+    repeatflag=repeatedsentencecheck.get(newsentence)
+    if repeatflag :
+        return True
+    repeatedsentencecheck[newsentence]=1    
+    return False                           
+
+
+
 for i in range(n+2,n+2+k):
-    data1[i]=data1[i].replace(" ","")
-    if "=>" in data1[i]:
-        data1[i]=data1[i].replace(" ","")
+     data1[i]=data1[i].replace(" ","") 
+     if "=>" in data1[i]:
+        data1[i]=data1[i].replace(" ","") 
         sentencetemp=CNF(data1[i].rstrip())
         kbbefore.append(sentencetemp)
-    else:
-        kbbefore.append(data1[i].rstrip())
-
+     else:
+        kbbefore.append(data1[i].rstrip())  
 for i in range(0,k):
-    kbbefore[i]=kbbefore[i].replace(" ","")
-    
+    kbbefore[i]=kbbefore[i].replace(" ","") 
+
 kb={}
 pattern=re.compile("\||&|=>") #we can remove the '\|'' to speed up as 'OR' doesnt come in the KB
 pattern1=re.compile("[(,]")
-for i in range(0,k):
+for i in range(0,k):   
     kbbefore[i]=standardizationnew(kbbefore[i])
     temp=pattern.split(kbbefore[i])
     lenoftemp=len(temp)
@@ -170,6 +169,7 @@ for i in range(0,k):
                 kb[predicate[0]][lengthofpredicate]=[kbbefore[i],temp,j,predicate[1:]]
         else:
             kb[predicate[0]]={lengthofpredicate:[[kbbefore[i],temp,j,predicate[1:]]]}
+
 for qi in range(0,n):
     queries[qi]=standardizationnew(queries[qi])
 
@@ -187,25 +187,26 @@ def unificiation(arglist1,arglist2):
         elif arglist1[i] == arglist2[i] and (arglist1[i][0] in capitalVariables) and (arglist2[i][0] in capitalVariables):
             if arglist1[i] not in theta.keys():
                 theta[arglist1[i]] = arglist2[i]
-            elif (arglist1[i][0] in capitalVariables) and not (arglist2[i][0] in capitalVariables):
-                if arglist2[i] not in theta.keys():
-                    theta[arglist2[i]] = arglist1[i]
-                    arglist2 = substituevalue(arglist2, arglist2[i], arglist1[i])
-                elif not (arglist1[i][0] in capitalVariables) and (arglist2[i][0] in capitalVariables):
-                    if arglist1[i] not in theta.keys():
-                        theta[arglist1[i]] = arglist2[i]
-                        arglist1 = substituevalue(arglist1, arglist1[i], arglist2[i])
-                elif not (arglist1[i][0] in capitalVariables) and not (arglist2[i][0] in capitalVariables):
-                    if arglist1[i] not in theta.keys():
-                        theta[arglist1[i]] = arglist2[i]
-                        arglist1 = substituevalue(arglist1, arglist1[i], arglist2[i])
-                    else:
-                        argval=theta[arglist1[i]]
-                        theta[arglist2[i]]=argval
-                        arglist2 = substituevalue(arglist2, arglist2[i], argval)
+        elif (arglist1[i][0] in capitalVariables) and not (arglist2[i][0] in capitalVariables):
+            if arglist2[i] not in theta.keys():
+                theta[arglist2[i]] = arglist1[i]
+                arglist2 = substituevalue(arglist2, arglist2[i], arglist1[i])
+        elif not (arglist1[i][0] in capitalVariables) and (arglist2[i][0] in capitalVariables):
+            if arglist1[i] not in theta.keys():
+                theta[arglist1[i]] = arglist2[i]
+                arglist1 = substituevalue(arglist1, arglist1[i], arglist2[i])   
+        elif not (arglist1[i][0] in capitalVariables) and not (arglist2[i][0] in capitalVariables):
+            if arglist1[i] not in theta.keys():
+                theta[arglist1[i]] = arglist2[i]
+                arglist1 = substituevalue(arglist1, arglist1[i], arglist2[i])
+            else:
+                argval=theta[arglist1[i]]
+                theta[arglist2[i]]=argval
+                arglist2 = substituevalue(arglist2, arglist2[i], argval)               
     return [arglist1,arglist2,theta]
 
 def resolution():
+    global repeatedsentencecheck
     answer=list()
     qrno=0
     for qr in queries:
@@ -241,77 +242,77 @@ def resolution():
                 if ansclausespredicate[0][0]=='~':
                     anspredicatenegated=ansclausespredicate[0][1:]
                 else:
-                    anspredicatenegated="~"+ansclausespredicate[0]
+                    anspredicatenegated="~"+ansclausespredicate[0]   
                 x=kbquery.get(anspredicatenegated,{}).get(lenansclausespredicate)
                 if not x:
-                    continue
+                    continue      
                 else:
                     lenofx=len(x)
                     for numofpred in range(0,lenofx):
                         insidekbflag=0
                         putinsideq=0
                         sentenceselected=x[numofpred]
-                thetalist=unificiation(copy.deepcopy(sentenceselected[3]),copy.deepcopy(ansclausespredicate[1:]))
-                if(len(thetalist)!=0):
-                    for key in thetalist[2]:
-                        tl=thetalist[2][key]
-                        tl2=thetalist[2].get(tl)
-                        if tl2:
-                            thetalist[2][key]=tl2
-                        flagmatchedwithkb=1
-                        notincludedindex=sentenceselected[2]
-                        senclause=copy.deepcopy(sentenceselected[1])
-                        mergepart1=""
-                        del senclause[notincludedindex]
-                        ansclauseleft=copy.deepcopy(ansclauses)
-                        del ansclauseleft[ac]
-                        for am in range(0,len(senclause)):
-                            senclause[am]=replace(senclause[am],thetalist[2])
-                            mergepart1=mergepart1+senclause[am]+'|'
-                        for remain in range(0,len(ansclauseleft)):
-                            listansclauseleft=ansclauseleft[remain]
-                            ansclauseleft[remain]=replace(listansclauseleft,thetalist[2])
-                            if ansclauseleft[remain] not in senclause:
-                                mergepart1=mergepart1+ansclauseleft[remain]+'|'
-                        mergepart1=mergepart1[:-1]
-                        if mergepart1=="":
-                            currentanswer="TRUE"
-                            break
-                        ckbflag=insidekbcheck(mergepart1)
-                        if not ckbflag:
-                            mergepart1=insidestandardizationnew(mergepart1)
-                            ans=mergepart1
-                            temp=pattern.split(ans)
-                            lenoftemp=len(temp)
-                            for j in range(0,lenoftemp):
-                                clause=temp[j]
-                                clause=clause[:-1]
-                                predicate=pattern1.split(clause)
-                                argumentlist=predicate[1:]
-                                lengthofpredicate=len(predicate)-1
-                                if predicate[0] in kbquery:
-                                    if lengthofpredicate in kbquery[predicate[0]]:
-                                        kbquery[predicate[0]][lengthofpredicate].append([mergepart1,temp,j,argumentlist])
-                                    else:
-                                        kbquery[predicate[0]][lengthofpredicate]=[[mergepart1,temp,j,argumentlist]]
-                                else:
-                                    kbquery[predicate[0]]={lengthofpredicate:[[mergepart1,temp,j,argumentlist]]}
-                            q.put(ans)
+                        thetalist=unificiation(copy.deepcopy(sentenceselected[3]),copy.deepcopy(ansclausespredicate[1:]))
+                        if(len(thetalist)!=0):
+                            for key in thetalist[2]:
+                                tl=thetalist[2][key]
+                                tl2=thetalist[2].get(tl)
+                                if tl2:
+                                    thetalist[2][key]=tl2
+                            flagmatchedwithkb=1
+                            notincludedindex=sentenceselected[2]
+                            senclause=copy.deepcopy(sentenceselected[1])
+                            mergepart1=""
+                            del senclause[notincludedindex]
+                            ansclauseleft=copy.deepcopy(ansclauses)
+                            del ansclauseleft[ac]
+                            for am in range(0,len(senclause)):
+                                senclause[am]=replace(senclause[am],thetalist[2])
+                                mergepart1=mergepart1+senclause[am]+'|'      
+                            for remain in range(0,len(ansclauseleft)):
+                                listansclauseleft=ansclauseleft[remain]
+                                ansclauseleft[remain]=replace(listansclauseleft,thetalist[2])
+                                if ansclauseleft[remain] not in senclause:
+                                    mergepart1=mergepart1+ansclauseleft[remain]+'|'
+                            mergepart1=mergepart1[:-1]
+                            if mergepart1=="": 
+                               currentanswer="TRUE"
+                               break                             
+                            ckbflag=insidekbcheck(mergepart1)
+                            if not ckbflag:
+                                    mergepart1=insidestandardizationnew(mergepart1)  
+                                    ans=mergepart1
+                                    temp=pattern.split(ans)
+                                    lenoftemp=len(temp)
+                                    for j in range(0,lenoftemp):
+                                        clause=temp[j]
+                                        clause=clause[:-1]
+                                        predicate=pattern1.split(clause)
+                                        argumentlist=predicate[1:]
+                                        lengthofpredicate=len(predicate)-1
+                                        if predicate[0] in kbquery:
+                                            if lengthofpredicate in kbquery[predicate[0]]:
+                                                kbquery[predicate[0]][lengthofpredicate].append([mergepart1,temp,j,argumentlist])
+                                            else:
+                                                kbquery[predicate[0]][lengthofpredicate]=[[mergepart1,temp,j,argumentlist]]
+                                        else:
+                                            kbquery[predicate[0]]={lengthofpredicate:[[mergepart1,temp,j,argumentlist]]}
+                                    q.put(ans)                           
                     if(currentanswer=="TRUE"):
-                        break
-                if(currentanswer=="TRUE"):
-                    break
-                if(counter==2000 or (time.time()-query_start)>20):
-                    break
-            answer.append(currentanswer)
-        return answer
+                        break                        
+            if(currentanswer=="TRUE"):
+               break
+            if(counter==2000 or (time.time()-query_start)>20):
+                break    
+        answer.append(currentanswer)
+    return answer  
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     finalanswer=resolution()
     o=open("output.txt","w+")
     wc=0
     while(wc < n-1):
-        o.write(finalanswer[wc]+"\n")
-        wc+=1
+         o.write(finalanswer[wc]+"\n")
+         wc+=1
     o.write(finalanswer[wc])
     o.close()
