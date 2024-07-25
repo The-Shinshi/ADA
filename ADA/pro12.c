@@ -1,116 +1,101 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-#define N 8
-
-// Function to print the solution
-void printSolution(char board[N][N])
+#include <stdbool.h>
+void printSolution(int **board, int N)
 {
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            printf(" %c ", board[i][j]);
+            printf("%s ", board[i][j] ? "Q" : "#");
         }
         printf("\n");
     }
 }
-
-// Function to check if a queen can be placed on board[row][col]
-int isSafe(char board[N][N], int row, int col)
+bool isSafe(int **board, int N, int row, int col)
 {
     int i, j;
-
-    // Check the row on the left side
     for (i = 0; i < col; i++)
     {
-        if (board[row][i] == 'Q')
+        if (board[row][i])
         {
-            return 0;
+            return false;
         }
     }
-
-    // Check upper diagonal on the left side
     for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
     {
-        if (board[i][j] == 'Q')
+        if (board[i][j])
         {
-            return 0;
+            return false;
         }
     }
-
-    // Check lower diagonal on the left side
     for (i = row, j = col; j >= 0 && i < N; i++, j--)
     {
-        if (board[i][j] == 'Q')
+        if (board[i][j])
         {
-            return 0;
+            return false;
         }
     }
 
-    return 1;
+    return true;
 }
-
-// Recursive function to solve N Queens problem
-int solveNQUtil(char board[N][N], int col)
+bool solveNQUtil(int **board, int N, int col)
 {
-    // If all queens are placed, return true
     if (col >= N)
     {
-        return 1;
+        return true;
     }
-
-    // Consider this column and try placing this queen in all rows one by one
     for (int i = 0; i < N; i++)
     {
-        // Check if the queen can be placed on board[i][col]
-        if (isSafe(board, i, col))
+        if (isSafe(board, N, i, col))
         {
-            // Place this queen in board[i][col]
-            board[i][col] = 'Q';
-
-            // Recur to place rest of the queens
-            if (solveNQUtil(board, col + 1))
+            board[i][col] = 1;
+            if (solveNQUtil(board, N, col + 1))
             {
-                return 1;
+                return true;
             }
-
-            // If placing queen in board[i][col] doesn't lead to a solution, then remove queen from board[i][col]
-            board[i][col] = '-';
+            board[i][col] = 0;
         }
     }
-
-    // If the queen cannot be placed in any row in this column, then return false
-    return 0;
+    return false;
 }
-
-// Function to solve N Queens problem for 4 queens
-void solve4Queens()
+bool solveNQ(int N)
 {
-    char board[N][N];
-
-    // Initialize the board with '-'
+    int **board = (int **)malloc(N * sizeof(int *));
     for (int i = 0; i < N; i++)
     {
+        board[i] = (int *)malloc(N * sizeof(int));
         for (int j = 0; j < N; j++)
         {
-            board[i][j] = '-';
+            board[i][j] = 0;
         }
     }
 
-    if (solveNQUtil(board, 0) == 0)
+    if (!solveNQUtil(board, N, 0))
     {
         printf("Solution does not exist\n");
-        return;
+        for (int i = 0; i < N; i++)
+        {
+            free(board[i]);
+        }
+        free(board);
+        return false;
     }
 
-    printSolution(board);
-}
+    printSolution(board, N);
 
-// Driver function
+    for (int i = 0; i < N; i++)
+    {
+        free(board[i]);
+    }
+    free(board);
+    return true;
+}
 int main()
 {
-    printf("Solution for 4 Queens problem:\n");
-    solve4Queens();
+    int N;
+    printf("Enter the number of queens: ");
+    scanf("%d", &N);
+    solveNQ(N);
     return 0;
 }
