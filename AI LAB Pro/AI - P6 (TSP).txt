@@ -1,0 +1,114 @@
+import math
+
+# Initialize the maximum size value for comparisons
+maxsize = float('inf')
+
+# Function to copy temporary solution to the final solution
+
+
+def copy_to_final(curr_path):
+    final_path[:N + 1] = curr_path[:]
+    final_path[N] = curr_path[0]
+
+# Function to find the minimum edge cost ending at vertex i
+
+
+def first_min(adj, i):
+    min_cost = maxsize
+    for k in range(N):
+        if adj[i][k] < min_cost and i != k:
+            min_cost = adj[i][k]
+    return min_cost
+
+# Function to find the second minimum edge cost ending at vertex i
+
+
+def second_min(adj, i):
+    first, second = maxsize, maxsize
+    for j in range(N):
+        if i == j:
+            continue
+        if adj[i][j] <= first:
+            second = first
+            first = adj[i][j]
+        elif adj[i][j] <= second and adj[i][j] != first:
+            second = adj[i][j]
+    return second
+
+# Recursive function to solve the TSP problem
+
+
+def tsp_rec(adj, curr_bound, curr_weight, level, curr_path, visited):
+    global final_res
+
+    # Base case: all nodes are visited
+    if level == N:
+        if adj[curr_path[level - 1]][curr_path[0]] != 0:
+            curr_res = curr_weight + adj[curr_path[level - 1]][curr_path[0]]
+            if curr_res < final_res:
+                copy_to_final(curr_path)
+                final_res = curr_res
+        return
+
+    # Try all vertices as the next node
+    for i in range(N):
+        if adj[curr_path[level - 1]][i] != 0 and not visited[i]:
+            temp_bound = curr_bound
+            curr_weight += adj[curr_path[level - 1]][i]
+
+            if level == 1:
+                curr_bound -= (first_min(adj,
+                               curr_path[level - 1]) + first_min(adj, i)) / 2
+            else:
+                curr_bound -= (second_min(adj,
+                               curr_path[level - 1]) + first_min(adj, i)) / 2
+
+            if curr_bound + curr_weight < final_res:
+                curr_path[level] = i
+                visited[i] = True
+                tsp_rec(adj, curr_bound, curr_weight,
+                        level + 1, curr_path, visited)
+
+            curr_weight -= adj[curr_path[level - 1]][i]
+            curr_bound = temp_bound
+
+            visited = [False] * N
+            for j in range(level):
+                if curr_path[j] != -1:
+                    visited[curr_path[j]] = True
+
+# Function to set up the final path
+
+
+def tsp(adj):
+    curr_bound = 0
+    curr_path = [-1] * (N + 1)
+    visited = [False] * N
+
+    for i in range(N):
+        curr_bound += (first_min(adj, i) + second_min(adj, i))
+    curr_bound = math.ceil(curr_bound / 2)
+
+    visited[0] = True
+    curr_path[0] = 0
+
+    tsp_rec(adj, curr_bound, 0, 1, curr_path, visited)
+
+
+# Driver code
+if __name__ == "__main__":
+    adj = [[0, 4, 12, 17],
+           [5, 0, 9, 18],
+           [11, 10, 0, 6],
+           [10, 2, 3, 0]]
+    N = 4
+
+    final_path = [None] * (N + 1)
+    final_res = maxsize
+
+    tsp(adj)
+
+    print("Minimum cost:", final_res)
+    print("Path Taken:", end=' ')
+    for i in range(N + 1):
+        print(final_path[i], end=' ')

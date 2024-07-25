@@ -1,0 +1,87 @@
+import heapq
+
+
+class State:
+    def __init__(self, missionaries, cannibals, boat, parent=None, cost=0, heuristic=0):
+        self.missionaries = missionaries
+        self.cannibals = cannibals
+        self.boat = boat
+        self.parent = parent
+        self.cost = cost
+        self.heuristic = heuristic
+        self.f = cost + heuristic
+
+    def __lt__(self, other):
+        return self.f < other.f
+
+    def is_valid(self):
+        if self.missionaries < 0 or self.cannibals < 0 or self.missionaries > 3 or self.cannibals > 3:
+            return False
+        if self.missionaries > 0 and self.cannibals > self.missionaries:
+            return False
+        if (3 - self.missionaries) > 0 and (3 - self.cannibals) > (3 - self.missionaries):
+            return False
+        return True
+
+    def is_goal(self):
+        return self.missionaries == 0 and self.cannibals == 0 and self.boat == 0
+
+    def generate_successors(self):
+        successors = []
+        if self.boat == 1:
+            moves = [(-1, 0), (-2, 0), (0, -1), (0, -2), (-1, -1)]
+        else:
+            moves = [(1, 0), (2, 0), (0, 1), (0, 2), (1, 1)]
+
+        for move in moves:
+            new_state = State(
+                self.missionaries + move[0], self.cannibals + move[1], 1 - self.boat, self, self.cost + 1)
+            if new_state.is_valid():
+                new_state.heuristic = self.heuristic_function(new_state)
+                successors.append(new_state)
+        return successors
+
+    def heuristic_function(self, state):
+        return state.missionaries + state.cannibals
+
+
+def best_first_search(initial_state):
+    open_list = []
+    closed_list = set()
+
+    heapq.heappush(open_list, initial_state)
+
+    while open_list:
+        current_state = heapq.heappop(open_list)
+        if current_state.is_goal():
+            return current_state
+
+        closed_list.add((current_state.missionaries,
+                        current_state.cannibals, current_state.boat))
+
+        for successor in current_state.generate_successors():
+            if (successor.missionaries, successor.cannibals, successor.boat) not in closed_list:
+                heapq.heappush(open_list, successor)
+    return None
+
+
+def print_solution(state):
+    path = []
+    while state:
+        path.append(state)
+        state = state.parent
+    path.reverse()
+    for step in path:
+        print(
+            f"Missionaries: {step.missionaries}, Cannibals: {step.cannibals}, Boat: {step.boat}")
+    print("Path Cost:", len(path) - 1)
+
+
+if __name__ == '__main__':
+    initial_state = State(3, 3, 1)
+    solution = best_first_search(initial_state)
+    if solution:
+        print("Solution found:")
+        print_solution(solution)
+    else:
+        print("Solution not found.")

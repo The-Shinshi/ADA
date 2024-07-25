@@ -1,0 +1,79 @@
+class Node:
+    def __init__(self, x, y, parent=None):
+        self.x = x
+        self.y = y
+        self.parent = parent
+
+
+def is_valid_state(x, y, jug1_capacity, jug2_capacity):
+    return 0 <= x <= jug1_capacity and 0 <= y <= jug2_capacity
+
+
+def generate_successors(node, jug1_capacity, jug2_capacity):
+    successors = []
+    x, y = node.x, node.y
+
+    possible_moves = [
+        (jug1_capacity, y),                       # Fill jug1
+        (x, jug2_capacity),                       # Fill jug2
+        (0, y),                                   # Empty jug1
+        (x, 0),                                   # Empty jug2
+        (max(0, x + y - jug2_capacity),
+         min(jug2_capacity, x + y)),  # Pour jug1 -> jug2
+        # Pour jug2 -> jug1
+        (min(jug1_capacity, x + y), max(0, x + y - jug1_capacity))
+    ]
+
+    for move in possible_moves:
+        if is_valid_state(move[0], move[1], jug1_capacity, jug2_capacity):
+            successors.append(Node(move[0], move[1], node))
+    return successors
+
+
+def dfs(jug1_capacity, jug2_capacity, goal):
+    stack = [Node(0, 0)]
+    visited = set()
+
+    while stack:
+        current_node = stack.pop()
+        if (current_node.x, current_node.y) in visited:
+            continue
+        visited.add((current_node.x, current_node.y))
+
+        if current_node.x == goal:
+            return current_node
+
+        for successor in generate_successors(current_node, jug1_capacity, jug2_capacity):
+            if (successor.x, successor.y) not in visited:
+                stack.append(successor)
+
+    return None
+
+
+def print_solution(node):
+    path = []
+    while node:
+        path.append((node.x, node.y))
+        node = node.parent
+    path.reverse()
+    for state in path:
+        print(state)
+    print("Path Cost:", len(path) - 1)
+
+
+def main():
+    jug1_capacity = int(input("Enter the capacity of Jug1: "))
+    jug2_capacity = int(input("Enter the capacity of Jug2: "))
+    goal = int(input("Enter the goal state for Jug1: "))
+
+    solution = dfs(jug1_capacity, jug2_capacity, goal)
+
+    if solution:
+        print("Solution path:")
+        print_solution(solution)
+    else:
+        print("Solution not found")
+
+
+if __name__ == "__main__":
+    main()
