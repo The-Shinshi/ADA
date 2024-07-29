@@ -1,51 +1,41 @@
 #include<stdio.h>
-#include<stdlib.h>
-int i,j,k,a,b,u,v,n,ne=1;
-int min, mincost = 0, cost[9][9], parent[9];
-int find (int);
-int uni (int, int);
-void main(){
-	printf("\n\tImplementation of Kruskal's algorithm\n");
-	printf("\nEnter the no. of vertices: ");
-	scanf("%d",&n);
-	printf("\nEnter the cost of adjacency matrix: \n");
-	for(i=1; i<=n; i++){
-		for(j=1; i<=n; j++){
-			scanf("%d", &cost[i][j]);
-			if(cost[i][j] == 0)
-			cost[i][j] = 999;
-		}
-	}
-	printf("The edges of minimum cost spanning tree are \n");
-	while(ne<n){
-		for(i=1, min=999; i<=n; i++){
-			for(j=1; j<=n; j++){
-				if(cost[i][j]<min){
-					min = cost[i][j];
-					a = u = i;
-					b = v = j;
-				}
-			}
-		}
-		u = find(u);
-		v = find(v);
-		if(uni(u,v)){
-			printf("%d edge (%d,%d) = %d\n", ne++,a,b,min);
-			mincost += min;
-		}
-		cost[a][b] = cost[b][a] = 999;
-	}
-	printf("\n\tMinimum cost = %d\n", mincost);
+int ne=1,min_cost=0;
+void main()
+{
+int n,i,j,min,a,u,b,v,cost[20][20],parent[20];
+printf("Enter the no. of vertices:");
+scanf("%d",&n);
+printf("\nEnter the cost matrix:\n");
+for(i=1;i<=n;i++)
+for(j=1;j<=n;j++)
+scanf("%d",&cost[i][j]);
+for(i=1;i<=n;i++)
+parent[i]=0;
+printf("\nThe edges of spanning tree are\n");
+while(ne<n)
+{
+min=999;
+for(i=1;i<=n;i++)
+{
+for(j=1;j<=n;j++)
+{
+if(cost[i][j]<min)
+{
+min=cost[i][j];
+a=u=i;
+b=v=j;
+}}}
+while(parent[u])
+u=parent[u];
+while(parent[v])
+v=parent[v];
+if(u!=v)
+{
+printf("Edge %d\t(%d->%d)=%d\n",ne++,a,b,min);
+min_cost=min_cost+min;
+parent[v]=u;
 }
-int find(int i){
-	while(parent[i])
-	i = parent[i];
-	return i;
+cost[a][b]=999;
 }
-int uni(int i, int j){
-	if(i!=j){
-		parent[j] = i;
-		return 1;
-	}
-	return 0;
+printf("\nMinimum cost=%d\n",min_cost);
 }
